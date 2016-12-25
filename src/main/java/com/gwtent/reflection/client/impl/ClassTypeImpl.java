@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.gwt.core.client.GWT;
 import com.gwtent.reflection.client.AccessDef;
 import com.gwtent.reflection.client.ClassHelper;
 import com.gwtent.reflection.client.ClassType;
@@ -227,6 +228,28 @@ public class ClassTypeImpl<T> extends TypeImpl implements AccessDef, HasAnnotati
 		return (FieldImpl[]) fields.values().toArray(TypeOracleImpl.NO_JFIELDS);
 	}
 
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see com.gwtent.client.reflection.ClassType#getImplementedInterfaces()
+//	 */
+//	public ClassType<?>[] getImplementedInterfaces() throws ReflectionRequiredException {
+//		if (lasyinterfaces == null) {
+//			lasyinterfaces = new ArrayList<ClassType<?>>();
+//			for (Class<?> clazz : interfaces) {
+//				ClassType<?> type = TypeOracle.Instance.getClassType(clazz);
+//				if (type != null)
+//					lasyinterfaces.add(type);
+//			}
+//
+//			for (Type type : this.interfacesParameterized) {
+//				// if (type.isClassOrInterface() != null)
+//				lasyinterfaces.add((ClassType<?>) type);
+//			}
+//		}
+//		return lasyinterfaces.toArray(TypeOracleImpl.NO_JCLASSES);
+//	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -236,9 +259,14 @@ public class ClassTypeImpl<T> extends TypeImpl implements AccessDef, HasAnnotati
 		if (lasyinterfaces == null) {
 			lasyinterfaces = new ArrayList<ClassType<?>>();
 			for (Class<?> clazz : interfaces) {
-				ClassType<?> type = TypeOracle.Instance.getClassType(clazz);
-				if (type != null)
-					lasyinterfaces.add(type);
+				Type type = TypeOracleImpl.findType(clazz);
+				if ( type == null ) {
+					GWT.log(ReflectionUtils.createReflectionRequireMsg(clazz.getName(), null));
+					continue;
+				}
+				if ( type instanceof ClassType ) {
+					lasyinterfaces.add((ClassType<?>)type);
+				}
 			}
 
 			for (Type type : this.interfacesParameterized) {
@@ -248,6 +276,7 @@ public class ClassTypeImpl<T> extends TypeImpl implements AccessDef, HasAnnotati
 		}
 		return lasyinterfaces.toArray(TypeOracleImpl.NO_JCLASSES);
 	}
+
 
 	public String getJNISignature() {
 		String typeName = nestedName.replace('.', '$');

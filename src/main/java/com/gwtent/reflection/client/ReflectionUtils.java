@@ -324,40 +324,58 @@ public class ReflectionUtils {
 	  return null;
   }
   
-  /**
-   * return true if "classToTest" is assignable to "parentClass"
-   * @param parentClass
-   * @param classToTest
-   * @return
-   */
-  public static boolean isAssignable(Class<?> parentClass, Class<?> classToTest){
-  	checkReflection(classToTest);
-  	
-  	ClassType typeToTest = TypeOracle.Instance.getClassType(classToTest);
-  	
-  	if (testAssignableWithoutSuper(parentClass, typeToTest))
-  		return true;
-  	
-  	for (ClassType type : typeToTest.getImplementedInterfaces()){
+	/**
+	 * return true if "classToTest" is assignable to "parentClass"<br>
+	 * 要求所有的接口必须添加@Reflectable注解
+	 * @param parentClass
+	 * @param classToTest
+	 * @return
+	 */
+	public static boolean isAssignable(Class<?> parentClass, Class<?> classToTest) {
+		// 父类必须添加注解@Reflectable
+		checkReflection(parentClass);
+		// 当前被检查的类必须添加注解@Reflectable
+		checkReflection(classToTest);
+		// 1.检查是否是相同
+		if (testAssignableWithoutSuper(parentClass, classToTest)) {
+			return true;
+		}
+		
+		ClassType typeToTest = TypeOracle.Instance.getClassType(classToTest);
+		if ( typeToTest == null ) {
+			return false;
+		}
+		// 2.检查接口
+		for (ClassType type : typeToTest.getImplementedInterfaces()) {
 			if (isAssignable(parentClass, type.getDeclaringClass()))
 				return true;
 		}
-  	
-  	ClassType parentToTest = typeToTest.getSuperclass();
-  	while (parentToTest != null){
-  		if (isAssignable(parentClass, parentToTest.getDeclaringClass()))
-  			return true;
-  		
-  		parentToTest = parentToTest.getSuperclass();
-  	}
-  	
-  	return false;
-  }
+		// 3.检查父类
+		ClassType parentToTest = typeToTest.getSuperclass();
+		while (parentToTest != null) {
+			if (isAssignable(parentClass, parentToTest.getDeclaringClass()))
+				return true;
+			parentToTest = parentToTest.getSuperclass();
+		}
+
+		return false;
+	}
   
-  private static boolean testAssignableWithoutSuper(Class<?> parentClass, ClassType typeToTest){
-  	if (typeToTest.getDeclaringClass() == parentClass)
-  		return true;
-  	else
-  		return false;
-  }
+	/**
+	 * 测试typeToTest是否能转换为parentClass（接口或父类）<br>
+	 * modify private to public by xiewz at 2016-12-25
+	 * @param parentClass
+	 * @param typeToTest
+	 * @return
+	 */
+	public static boolean testAssignableWithoutSuper(Class<?> parentClass, Class<?> classToTest) {
+		// 父类必须添加注解@Reflectable
+		checkReflection(parentClass);
+		// 当前被检查的类必须添加注解@Reflectable
+		checkReflection(classToTest);
+		if (classToTest == parentClass)
+			return true;
+		else
+			return false;
+	}
 }
