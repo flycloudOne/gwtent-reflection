@@ -353,6 +353,10 @@ public class ReflectionUtils {
 		// 3.检查父类
 		ClassType parentToTest = typeToTest.getSuperclass();
 		while (parentToTest != null) {
+			// 如果父类是带参数的类型，则认为不是反射类，不继续处理
+			if ( parentToTest instanceof ParameterizedType ) {
+				return false;
+			}
 			if (isAssignable(parentClass, parentToTest.getDeclaringClass()))
 				return true;
 			parentToTest = parentToTest.getSuperclass();
