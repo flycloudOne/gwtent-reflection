@@ -346,7 +346,8 @@ public class ReflectionUtils {
 			return false;
 		}
 		// 2.检查接口
-		for ( ClassType type : typeToTest.getImplementedInterfaces() ) {
+		ClassType[] classTypes = typeToTest.getImplementedInterfaces();
+		for ( ClassType type : classTypes ) {
 			// 如果接口是带参数的类型，则认为不是反射类，不继续处理
 			if ( type instanceof ParameterizedType ) {
 				return false;
