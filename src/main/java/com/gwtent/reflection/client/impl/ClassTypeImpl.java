@@ -256,7 +256,7 @@ public class ClassTypeImpl<T> extends TypeImpl implements AccessDef, HasAnnotati
 	 * @see com.gwtent.client.reflection.ClassType#getImplementedInterfaces()
 	 */
 	public ClassType<?>[] getImplementedInterfaces() throws ReflectionRequiredException {
-		if (lasyinterfaces == null) {
+		if ( lasyinterfaces == null || lasyinterfaces.size() == 0 ) {
 			lasyinterfaces = new ArrayList<ClassType<?>>();
 			for (Class<?> clazz : interfaces) {
 				Type type = TypeOracleImpl.findType(clazz);
