@@ -256,27 +256,26 @@ public class ClassTypeImpl<T> extends TypeImpl implements AccessDef, HasAnnotati
 	 * @see com.gwtent.client.reflection.ClassType#getImplementedInterfaces()
 	 */
 	public ClassType<?>[] getImplementedInterfaces() throws ReflectionRequiredException {
-		if ( lasyinterfaces == null || lasyinterfaces.size() == 0 ) {
-			lasyinterfaces = new ArrayList<ClassType<?>>();
-			for (Class<?> clazz : interfaces) {
-				Type type = TypeOracleImpl.findType(clazz);
-				if ( type == null ) {
-					GWT.log(ReflectionUtils.createReflectionRequireMsg(clazz.getName(), null));
-					continue;
-				}
-				if ( type instanceof ClassType ) {
-					lasyinterfaces.add((ClassType<?>)type);
-				}
+		// 如果没有组织过接口，则先组织接口
+		lasyinterfaces = new ArrayList<ClassType<?>>();
+		for (Class<?> clazz : interfaces) {
+			Type type = TypeOracleImpl.findType(clazz);
+			if ( type == null ) {
+				GWT.log(ReflectionUtils.createReflectionRequireMsg(clazz.getName(), null));
+				continue;
 			}
-
-			for (Type type : this.interfacesParameterized) {
-				// if (type.isClassOrInterface() != null)
-				lasyinterfaces.add((ClassType<?>) type);
+			if ( type instanceof ClassType ) {
+				lasyinterfaces.add((ClassType<?>)type);
 			}
 		}
+		// 注释掉，不再使用泛型接口
+//		for (Type type : this.interfacesParameterized) {
+//			// if (type.isClassOrInterface() != null)
+//			lasyinterfaces.add((ClassType<?>) type);
+//		}
 		return lasyinterfaces.toArray(TypeOracleImpl.NO_JCLASSES);
 	}
-
+	
 
 	public String getJNISignature() {
 		String typeName = nestedName.replace('.', '$');
