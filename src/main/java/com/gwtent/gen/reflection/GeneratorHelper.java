@@ -21,6 +21,8 @@ package com.gwtent.gen.reflection;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
@@ -42,6 +44,17 @@ import com.gwtent.reflection.client.ReflectionUtils;
 import com.gwtent.reflection.client.impl.TypeOracleImpl;
 
 public class GeneratorHelper {
+	
+	private static List<String> ignore=new ArrayList<>();
+	
+	static{
+		ignore.add("com.google.gwt.resources.ext.ResourceGeneratorType");
+		ignore.add("com.google.gwt.resources.ext.DefaultExtensions");
+	}
+	
+	public static void addIgnoreAnnotation(String annotationName){
+		ignore.add(annotationName);
+	}
 	
 	public static boolean isSystemClass(JClassType type){
 		return type.getPackage().getName().startsWith("java.") || type.getPackage().getName().startsWith("javax.");
@@ -202,6 +215,9 @@ public class GeneratorHelper {
 		  return;
 		
 	  for (Annotation annotation : annotations) {
+	    if(ignore.contains(ReflectionUtils.getQualifiedSourceName(annotation.annotationType()))){
+			continue;
+		}
 	  	JClassType classType = typeOracle.findType(ReflectionUtils.getQualifiedSourceName(annotation.annotationType()));
 	  	if (classType != null){
 	  		source.print(dest + ".addAnnotation(" + createAnnotationValues(typeOracle, annotation, logger) + ");");
