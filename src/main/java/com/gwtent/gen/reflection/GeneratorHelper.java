@@ -50,6 +50,10 @@ public class GeneratorHelper {
 	static{
 		ignore.add("com.google.gwt.resources.ext.ResourceGeneratorType");
 		ignore.add("com.google.gwt.resources.ext.DefaultExtensions");
+		ignore.add("jsinterop.annotations.JsMethod");
+		ignore.add("jsinterop.annotations.JsIgnore");
+		ignore.add("jsinterop.annotations.JsType");
+		ignore.add("jsinterop.annotations.JsProperty");
 	}
 	
 	public static void addIgnoreAnnotation(String annotationName){
